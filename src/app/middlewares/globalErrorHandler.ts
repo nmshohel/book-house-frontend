@@ -1,22 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
-/* eslint-disable no-unused-expressions */
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import { Error } from "mongoose";
 import config from "../../config";
-// import ApiError from '../../errors/ApiError';
-// import handleValidationError from '../../errors/handleValidationError';
-
 import { ZodError } from "zod";
-// import handleCastError from '../../errors/handleCastError';
 import handleZodError from "../../errors/handleZodError";
 import { IGenericErrorMessage } from "../../interfaces/error";
-// import { errorLogger } from '../../shared/logger';
 import handleCastError from "../../errors/handleCastError";
 import handleValidationError from "../../errors/hangleValidationError";
 import ApiError from "../../errors/ApiError";
-
 const globalErrorHandler: ErrorRequestHandler = (
   error,
   req: Request,
