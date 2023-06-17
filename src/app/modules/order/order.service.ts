@@ -42,6 +42,9 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
   const buyer = await User.findOne(filter2);
   const lastBudjet =
     (buyer?.budjet?.valueOf() || 0) - (updateCow?.price?.valueOf() || 0);
+  if (lastBudjet < 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Not enough budjet");
+  }
   const update2 = { budjet: lastBudjet };
   const updateBuyerBudjet = await User.updateOne(filter2, update2, {
     new: true,
