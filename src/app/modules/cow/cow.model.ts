@@ -1,10 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
-import httpStatus from "http-status";
-import ApiError from "../../../errors/ApiError";
-import { number, string } from "zod";
-import { breed, category, label, location } from "./cow.constrant";
-import { CowModel, ICow } from "./cow.interface";
+import { breed, category, label, location } from './cow.constrant';
+import { CowModel, ICow } from './cow.interface';
 
 export const CowSchema = new Schema<ICow, CowModel>(
   {
@@ -42,7 +39,7 @@ export const CowSchema = new Schema<ICow, CowModel>(
     },
     seller: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
   },
@@ -54,4 +51,4 @@ export const CowSchema = new Schema<ICow, CowModel>(
   }
 );
 
-export const Cow = model<ICow, CowModel>("Cow", CowSchema);
+export const Cow = model<ICow, CowModel>('Cow', CowSchema);

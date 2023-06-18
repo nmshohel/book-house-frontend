@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response } from 'express';
 
 type IApiReponse<T> = {
   statusCode: number;
@@ -12,7 +12,7 @@ type IApiReponse<T> = {
   data?: T | null;
 };
 
-const sendResponse = <T>(res: Response, data: IApiReponse<T>): void => {
+const sendReponse = <T>(res: Response, data: IApiReponse<T>): void => {
   const responseData: IApiReponse<T> = {
     statusCode: data.statusCode,
     success: data.success,
@@ -24,4 +24,4 @@ const sendResponse = <T>(res: Response, data: IApiReponse<T>): void => {
   res.status(data.statusCode).json(responseData);
 };
 
-export default sendResponse;
+export default sendReponse;

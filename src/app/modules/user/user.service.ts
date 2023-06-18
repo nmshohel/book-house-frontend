@@ -1,9 +1,10 @@
-import { SortOrder } from "mongoose";
-import { IUser, IUserFilters } from "./user.interface";
-import { User } from "./user.model";
-import { paginationHelper } from "../../../helpers/paginationsHelper";
-import { IPaginationOptions } from "../../../interfaces/pagination";
-import { IGenericResponse } from "../../../interfaces/common";
+import { SortOrder } from 'mongoose';
+import { IUser, IUserFilters } from './user.interface';
+import { User } from './user.model';
+// import { paginationHelper } from "../../../helpers/paginationsHelper";
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { IGenericResponse } from '../../../interfaces/common';
+import { paginationHelper } from '../../../helpers/paginationHelper';
 
 const createUser = async (payload: IUser): Promise<IUser> => {
   const result = await User.create(payload);
@@ -26,16 +27,16 @@ const getAllUsers = async (
   filters: IUserFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IUser[]>> => {
-  const userSearchableFiled = ["phoneNumber"];
+  const userSearchableFiled = ['phoneNumber'];
   const { searchTerm } = filters;
   const andCondition = [];
 
   if (searchTerm) {
     andCondition.push({
-      $or: userSearchableFiled.map((filed) => ({
+      $or: userSearchableFiled.map(filed => ({
         [filed]: {
           $regex: searchTerm,
-          $options: "i",
+          $options: 'i',
         },
       })),
     });

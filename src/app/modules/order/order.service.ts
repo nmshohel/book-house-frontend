@@ -1,16 +1,17 @@
-import mongoose, { SortOrder } from "mongoose";
-import { paginationHelper } from "../../../helpers/paginationsHelper";
-import { IPaginationOptions } from "../../../interfaces/pagination";
-import { IGenericResponse } from "../../../interfaces/common";
+import mongoose, { SortOrder } from 'mongoose';
+// import { paginationHelper } from '../../../helpers/paginationsHelper';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { IGenericResponse } from '../../../interfaces/common';
 
-import { Order } from "./order.model";
-import { IOrder, IOrderFilters } from "./order.interfac";
-import { Cow } from "../cow/cow.model";
-import { ICow } from "../cow/cow.interface";
-import ApiError from "../../../errors/ApiError";
-import httpStatus from "http-status";
-import { User } from "../user/user.model";
-import { checkBuyerBudjet, getCowPrice } from "./order.utils";
+import { Order } from './order.model';
+import { IOrder, IOrderFilters } from './order.interfac';
+import { Cow } from '../cow/cow.model';
+// import { ICow } from "../cow/cow.interface";
+import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
+import { User } from '../user/user.model';
+import { checkBuyerBudjet, getCowPrice } from './order.utils';
+import { paginationHelper } from '../../../helpers/paginationHelper';
 
 const createOrder = async (payload: IOrder): Promise<IOrder> => {
   const buyerInfo = await checkBuyerBudjet(payload);
@@ -19,7 +20,7 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
   const cowPrice = cowInfo?.price?.valueOf();
   if (cowPrice !== undefined && buyerLastBudjet !== undefined) {
     if (buyerLastBudjet < cowPrice) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Not enough budget for buyer");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Not enough budget for buyer');
     }
   }
   const session = await mongoose.startSession();
@@ -29,12 +30,12 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
     // ----------------start get cow and update with soldOut
     const cowid = cowInfo?.id;
     const filter = { _id: cowid };
-    const update = { label: "sold out" };
+    const update = { label: 'sold out' };
     const updateCowLabel = await Cow.updateOne(filter, update, {
       new: true,
     });
     if (!updateCowLabel) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Cow not updated"); // Handle the case when cow is not found
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Cow not updated'); // Handle the case when cow is not found
     }
     // ----------------end get cow and update with soldOut-----------------
 
@@ -53,7 +54,7 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
       }
     );
     if (!updateSellerIncome) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Seller Income not Updated");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Seller Income not Updated');
     }
 
     // ----------------end update seller income------------------------
@@ -69,12 +70,12 @@ const createOrder = async (payload: IOrder): Promise<IOrder> => {
       new: true,
     });
     if (!updateBuyerBudjet) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Buyer Budjet Not Updated");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Buyer Budjet Not Updated');
     }
     // ----------------end update buyer budjet----------------------------------
     orderData = await Order.create(payload);
     if (!orderData) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Purchaed failed");
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Purchaed failed');
     }
     await session.commitTransaction();
     await session.endSession();
@@ -90,16 +91,16 @@ const getAllOrders = async (
   filters: IOrderFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IOrder[]>> => {
-  const cowSearchableFiled = ["name"];
+  const cowSearchableFiled = ['name'];
   const { searchTerm } = filters;
   const andCondition = [];
 
   if (searchTerm) {
     andCondition.push({
-      $or: cowSearchableFiled.map((filed) => ({
+      $or: cowSearchableFiled.map(filed => ({
         [filed]: {
           $regex: searchTerm,
-          $options: "i",
+          $options: 'i',
         },
       })),
     });

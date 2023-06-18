@@ -1,24 +1,26 @@
-import express from "express";
+import express from 'express';
 
-import validateRequest from "../../middlewares/validateRequest";
-import { CowController } from "./cow.controller";
-import { CowValidation } from "./cow.validation";
+import validateRequest from '../../middlewares/validateRequest';
+import { CowController } from './cow.controller';
+import { CowValidation } from './cow.validation';
 
 const router = express.Router();
 
 router.post(
-  "/create-cow",
+  '/create-cow',
   validateRequest(CowValidation.createCowZodSchema),
   CowController.createCow
 );
 
-router.get("/:id", CowController.getSingleCow);
-router.delete("/:id", CowController.deleteCow);
+router.post('/create-cow', CowController.createCow);
+
+router.get('/:id', CowController.getSingleCow);
+router.delete('/:id', CowController.deleteCow);
 router.patch(
-  "/:id",
+  '/:id',
   validateRequest(CowValidation.updateCowZodSchema),
   CowController.updateCow
 );
-router.get("/", CowController.getAllCows);
+router.get('/', CowController.getAllCows);
 
 export const CowRoutes = router;

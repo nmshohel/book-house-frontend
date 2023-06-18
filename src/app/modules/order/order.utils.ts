@@ -1,7 +1,7 @@
-import { ObjectId } from "mongoose";
-import { Cow } from "../cow/cow.model";
-import { User } from "../user/user.model";
-import { IOrder } from "./order.interfac";
+// import { ObjectId } from "mongoose";
+import { Cow } from '../cow/cow.model';
+import { User } from '../user/user.model';
+import { IOrder } from './order.interfac';
 
 export const checkBuyerBudjet = async (payload: IOrder) => {
   const buyerId = payload.buyer;

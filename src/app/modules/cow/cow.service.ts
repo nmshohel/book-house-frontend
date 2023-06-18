@@ -1,9 +1,10 @@
-import { SortOrder } from "mongoose";
-import { paginationHelper } from "../../../helpers/paginationsHelper";
-import { IPaginationOptions } from "../../../interfaces/pagination";
-import { IGenericResponse } from "../../../interfaces/common";
-import { ICow, ICowFilters } from "./cow.interface";
-import { Cow } from "./cow.model";
+import { SortOrder } from 'mongoose';
+// import { paginationHelper } from "../../../helpers/paginationsHelper";
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { IGenericResponse } from '../../../interfaces/common';
+import { ICow, ICowFilters } from './cow.interface';
+import { Cow } from './cow.model';
+import { paginationHelper } from '../../../helpers/paginationHelper';
 
 const createCow = async (payload: ICow): Promise<ICow> => {
   const result = await Cow.create(payload);
@@ -26,16 +27,16 @@ const getAllCows = async (
   filters: ICowFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<ICow[]>> => {
-  const cowSearchableFiled = ["name"];
+  const cowSearchableFiled = ['name'];
   const { searchTerm } = filters;
   const andCondition = [];
 
   if (searchTerm) {
     andCondition.push({
-      $or: cowSearchableFiled.map((filed) => ({
+      $or: cowSearchableFiled.map(filed => ({
         [filed]: {
           $regex: searchTerm,
-          $options: "i",
+          $options: 'i',
         },
       })),
     });

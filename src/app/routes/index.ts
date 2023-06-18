@@ -1,30 +1,30 @@
-import express from "express";
-import { UserRoutes } from "../modules/user/user.route";
-import { CowRoutes } from "../modules/cow/cow.route";
-import { OrderRoutes } from "../modules/order/order.route";
+import express from 'express';
+import { UserRoutes } from '../modules/user/user.route';
+import { CowRoutes } from '../modules/cow/cow.route';
+import { OrderRoutes } from '../modules/order/order.route';
 
 const router = express.Router();
 
 const moduleRoute = [
   {
-    path: "/auth",
+    path: '/auth',
     route: UserRoutes,
   },
   {
-    path: "/users",
+    path: '/users',
     route: UserRoutes,
   },
   {
-    path: "/cows",
+    path: '/cows',
     route: CowRoutes,
   },
   {
-    path: "/orders",
+    path: '/orders',
     route: OrderRoutes,
   },
 ];
 
-moduleRoute.forEach((route) => router.use(route.path, route.route));
+moduleRoute.forEach(route => router.use(route.path, route.route));
 // router.use('/users/', UserRoutes);
 // router.use('/academic-semisters', AcademicSemisterRoutes);
 
