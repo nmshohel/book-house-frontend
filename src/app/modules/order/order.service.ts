@@ -1,4 +1,4 @@
-import { SortOrder } from "mongoose";
+import mongoose, { SortOrder } from "mongoose";
 import { paginationHelper } from "../../../helpers/paginationsHelper";
 import { IPaginationOptions } from "../../../interfaces/pagination";
 import { IGenericResponse } from "../../../interfaces/common";
@@ -10,49 +10,80 @@ import { ICow } from "../cow/cow.interface";
 import ApiError from "../../../errors/ApiError";
 import httpStatus from "http-status";
 import { User } from "../user/user.model";
+import { checkBuyerBudjet, getCowPrice } from "./order.utils";
 
 const createOrder = async (payload: IOrder): Promise<IOrder> => {
-  // ----------------start get cow and update with soldOut
-  console.log(payload);
-  const cowid = payload.cow;
-  const filter = { _id: cowid };
-  const update = { label: "sold out" };
-  const updateCow = await Cow.findOneAndUpdate(filter, update, { new: true });
-
-  if (!updateCow) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Cow not updated"); // Handle the case when cow is not found
+  const buyerInfo = await checkBuyerBudjet(payload);
+  const cowInfo = await getCowPrice(payload);
+  const buyerLastBudjet = buyerInfo?.budjet?.valueOf();
+  const cowPrice = cowInfo?.price?.valueOf();
+  if (cowPrice !== undefined && buyerLastBudjet !== undefined) {
+    if (buyerLastBudjet < cowPrice) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Not enough budget for buyer");
+    }
   }
-  // ----------------end get cow and update with soldOut
+  const session = await mongoose.startSession();
+  let orderData = null;
+  try {
+    session.startTransaction();
+    // ----------------start get cow and update with soldOut
+    const cowid = cowInfo?.id;
+    const filter = { _id: cowid };
+    const update = { label: "sold out" };
+    const updateCowLabel = await Cow.updateOne(filter, update, {
+      new: true,
+    });
+    if (!updateCowLabel) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Cow not updated"); // Handle the case when cow is not found
+    }
+    // ----------------end get cow and update with soldOut-----------------
 
-  // ----------------start update seller income
-  const sellerId = updateCow.seller.toString();
-  const filter1 = { _id: sellerId };
-  const seller = await User.findOne(filter1);
-  const lastIncome =
-    (seller?.income?.valueOf() || 0) + (updateCow?.price?.valueOf() || 0);
-  const update1 = { income: lastIncome };
-  const updateSellerIncome = await User.updateOne(filter1, update1, {
-    new: true,
-  });
-  // ----------------end update seller income
+    // ----------------start update seller income---------------------
+    const sellerId = cowInfo?.seller.toString();
+    const sellerFilter = { _id: sellerId };
+    const seller = await User.findOne(sellerFilter);
+    const lastIncome =
+      (seller?.income?.valueOf() || 0) + (cowInfo?.price?.valueOf() || 0);
+    const sellerUpdate = { income: lastIncome };
+    const updateSellerIncome = await User.updateOne(
+      sellerFilter,
+      sellerUpdate,
+      {
+        new: true,
+      }
+    );
+    if (!updateSellerIncome) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Seller Income not Updated");
+    }
 
-  // ----------------start update buyer budjet
-  const buyerId = payload.buyer;
-  const filter2 = { _id: buyerId };
-  const buyer = await User.findOne(filter2);
-  const lastBudjet =
-    (buyer?.budjet?.valueOf() || 0) - (updateCow?.price?.valueOf() || 0);
-  if (lastBudjet < 0) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Not enough budjet");
+    // ----------------end update seller income------------------------
+
+    // ----------------start update buyer budjet--------------------------
+    const buyerId = buyerInfo?.id;
+    const buyerFilter = { _id: buyerId };
+    const lastBudjet =
+      (buyerLastBudjet?.valueOf() || 0) - (cowInfo?.price?.valueOf() || 0);
+    const buyerUpdate = { budjet: lastBudjet };
+
+    const updateBuyerBudjet = await User.updateOne(buyerFilter, buyerUpdate, {
+      new: true,
+    });
+    if (!updateBuyerBudjet) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Buyer Budjet Not Updated");
+    }
+    // ----------------end update buyer budjet----------------------------------
+    orderData = await Order.create(payload);
+    if (!orderData) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Purchaed failed");
+    }
+    await session.commitTransaction();
+    await session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
   }
-  const update2 = { budjet: lastBudjet };
-  const updateBuyerBudjet = await User.updateOne(filter2, update2, {
-    new: true,
-  });
-  // ----------------end update buyer budjet
-
-  const result = await Order.create(payload);
-  return result;
+  return orderData;
 };
 
 const getAllOrders = async (
