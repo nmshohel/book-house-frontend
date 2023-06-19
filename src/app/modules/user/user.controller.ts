@@ -7,6 +7,7 @@ import { UserService } from './user.service';
 import sendReponse from '../../../shared/sendResponse';
 import { paginationFileds } from '../../../constants/pagination';
 import pick from '../../../shared/pick';
+import { userFilterableFields } from './user.constrant';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const { ...userData } = req.body;
@@ -44,14 +45,15 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ['searchTerm']);
+  const filters = pick(req.query, userFilterableFields);
   const paginationOptions = pick(req.query, paginationFileds);
+
   const result = await UserService.getAllUsers(filters, paginationOptions);
 
   sendReponse<IUser[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User retrieved Successfull',
+    message: 'Semesters retrieved successfully !',
     meta: result.meta,
     data: result.data,
   });

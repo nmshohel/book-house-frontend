@@ -5,6 +5,7 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { ICow, ICowFilters } from './cow.interface';
 import { Cow } from './cow.model';
 import { paginationHelper } from '../../../helpers/paginationHelper';
+import { cowSearchableFields } from './cow.constrant';
 
 const createCow = async (payload: ICow): Promise<ICow> => {
   const result = await Cow.create(payload);
@@ -27,36 +28,87 @@ const getAllCows = async (
   filters: ICowFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<ICow[]>> => {
-  const cowSearchableFiled = ['name'];
-  const { searchTerm } = filters;
-  const andCondition = [];
+  const { searchTerm, ...filtersData } = filters;
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelper.calculatePaginations(paginationOptions);
+
+  const andConditions = [];
+
+  // if (searchTerm) {
+  //   andConditions.push({
+  //     $or: cowSearchableFields.map(field => ({
+  //       [field]: {
+  //         $regex: searchTerm,
+  //         $options: 'i',
+  //       },
+  //     })),
+  //   });
+  // }
 
   if (searchTerm) {
-    andCondition.push({
-      $or: cowSearchableFiled.map(filed => ({
-        [filed]: {
-          $regex: searchTerm,
-          $options: 'i',
-        },
+    andConditions.push({
+      $or: cowSearchableFields.map(field => {
+        const regex =
+          typeof searchTerm === 'string'
+            ? { $regex: searchTerm, $options: 'i' } // for string search
+            : { $eq: searchTerm }; // for number search
+
+        return {
+          [field]: regex,
+        };
+      }),
+    });
+  }
+  // if (searchTerm) {
+  //   andConditions.push({
+  //     $or: cowSearchableFields.map(field => ({
+  //       [field]: {
+  //         $regex: new RegExp(searchTerm, 'i'), // Use RegExp directly here
+  //       },
+  //     })),
+  //   });
+  // }
+  // if (searchTerm) {
+  //   andConditions.push({
+  //     $or: cowSearchableFields.map(field => ({
+  //       [field]: {
+  //         $regex: searchTerm,
+  //         $options: 'i',
+  //       },
+  //     })),
+  //   });
+  // }
+  // if (searchTerm) {
+  //   andConditions.push({
+  //     $or: cowSearchableFields.map(field => ({
+  //       [field]: { $regex: new RegExp(searchTerm, 'i') },
+  //     })),
+  //   });
+  // }
+
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
       })),
     });
   }
-
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePaginations(paginationOptions);
 
   const sortConditions: { [key: string]: SortOrder } = {};
 
   if (sortBy && sortOrder) {
     sortConditions[sortBy] = sortOrder;
   }
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {};
 
-  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
-  const result = await Cow.find(whereCondition)
+  const result = await Cow.find(whereConditions)
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
-  const total = await Cow.countDocuments(whereCondition);
+
+  const total = await Cow.countDocuments(whereConditions);
+
   return {
     meta: {
       page,

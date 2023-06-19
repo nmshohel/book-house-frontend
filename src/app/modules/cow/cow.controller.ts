@@ -8,6 +8,7 @@ import catchAsync from '../../../shared/catchAsync';
 import sendReponse from '../../../shared/sendResponse';
 import { paginationFileds } from '../../../constants/pagination';
 import pick from '../../../shared/pick';
+import { cowFilterableFields } from './cow.constrant';
 
 const createCow = catchAsync(async (req: Request, res: Response) => {
   const { ...cowData } = req.body;
@@ -45,14 +46,15 @@ const deleteCow = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllCows = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ['searchTerm']);
+  const filters = pick(req.query, cowFilterableFields);
   const paginationOptions = pick(req.query, paginationFileds);
+
   const result = await CowService.getAllCows(filters, paginationOptions);
 
   sendReponse<ICow[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Cow retrieved Successfull',
+    message: 'Semesters retrieved successfully !',
     meta: result.meta,
     data: result.data,
   });
