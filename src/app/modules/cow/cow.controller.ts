@@ -54,7 +54,7 @@ const getAllCows = catchAsync(async (req: Request, res: Response) => {
   sendReponse<ICow[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Semesters retrieved successfully !',
+    message: 'Cow retrieved successfully !',
     meta: result.meta,
     data: result.data,
   });

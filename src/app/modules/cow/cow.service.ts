@@ -34,17 +34,6 @@ const getAllCows = async (
 
   const andConditions = [];
 
-  // if (searchTerm) {
-  //   andConditions.push({
-  //     $or: cowSearchableFields.map(field => ({
-  //       [field]: {
-  //         $regex: searchTerm,
-  //         $options: 'i',
-  //       },
-  //     })),
-  //   });
-  // }
-
   if (searchTerm) {
     andConditions.push({
       $or: cowSearchableFields.map(field => {
@@ -59,32 +48,6 @@ const getAllCows = async (
       }),
     });
   }
-  // if (searchTerm) {
-  //   andConditions.push({
-  //     $or: cowSearchableFields.map(field => ({
-  //       [field]: {
-  //         $regex: new RegExp(searchTerm, 'i'), // Use RegExp directly here
-  //       },
-  //     })),
-  //   });
-  // }
-  // if (searchTerm) {
-  //   andConditions.push({
-  //     $or: cowSearchableFields.map(field => ({
-  //       [field]: {
-  //         $regex: searchTerm,
-  //         $options: 'i',
-  //       },
-  //     })),
-  //   });
-  // }
-  // if (searchTerm) {
-  //   andConditions.push({
-  //     $or: cowSearchableFields.map(field => ({
-  //       [field]: { $regex: new RegExp(searchTerm, 'i') },
-  //     })),
-  //   });
-  // }
 
   if (Object.keys(filtersData).length) {
     andConditions.push({
