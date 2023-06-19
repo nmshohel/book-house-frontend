@@ -29,7 +29,7 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   sendReponse<IOrder[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Cow retrieved Successfull',
+    message: 'Order retrieved Successfull',
     meta: result.meta,
     data: result.data,
   });

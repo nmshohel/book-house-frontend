@@ -117,6 +117,8 @@ const getAllOrders = async (
 
   const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
   const result = await Order.find(whereCondition)
+    .populate('cow')
+    .populate('buyer')
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
