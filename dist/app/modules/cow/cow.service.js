@@ -42,16 +42,6 @@ const getAllCows = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
     const { searchTerm } = filters, filtersData = __rest(filters, ["searchTerm"]);
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePaginations(paginationOptions);
     const andConditions = [];
-    // if (searchTerm) {
-    //   andConditions.push({
-    //     $or: cowSearchableFields.map(field => ({
-    //       [field]: {
-    //         $regex: searchTerm,
-    //         $options: 'i',
-    //       },
-    //     })),
-    //   });
-    // }
     if (searchTerm) {
         andConditions.push({
             $or: cow_constrant_1.cowSearchableFields.map(field => {
@@ -64,32 +54,6 @@ const getAllCows = (filters, paginationOptions) => __awaiter(void 0, void 0, voi
             }),
         });
     }
-    // if (searchTerm) {
-    //   andConditions.push({
-    //     $or: cowSearchableFields.map(field => ({
-    //       [field]: {
-    //         $regex: new RegExp(searchTerm, 'i'), // Use RegExp directly here
-    //       },
-    //     })),
-    //   });
-    // }
-    // if (searchTerm) {
-    //   andConditions.push({
-    //     $or: cowSearchableFields.map(field => ({
-    //       [field]: {
-    //         $regex: searchTerm,
-    //         $options: 'i',
-    //       },
-    //     })),
-    //   });
-    // }
-    // if (searchTerm) {
-    //   andConditions.push({
-    //     $or: cowSearchableFields.map(field => ({
-    //       [field]: { $regex: new RegExp(searchTerm, 'i') },
-    //     })),
-    //   });
-    // }
     if (Object.keys(filtersData).length) {
         andConditions.push({
             $and: Object.entries(filtersData).map(([field, value]) => ({

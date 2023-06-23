@@ -68,7 +68,7 @@ const getAllCows = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'Semesters retrieved successfully !',
+        message: 'Cow retrieved successfully !',
         meta: result.meta,
         data: result.data,
     });
