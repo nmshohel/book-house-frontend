@@ -12,11 +12,13 @@ import { userFilterableFields } from './user.constrant';
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const { ...userData } = req.body;
   const result = await UserService.createUser(userData);
-
   sendReponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User created Successfully',
+    message:
+      result.role === 'admin'
+        ? 'Admin created Successfully'
+        : 'User created Successfully',
     data: result,
   });
 });
