@@ -24,7 +24,7 @@ export const UserSchema = new Schema<
     password: {
       type: String,
       required: true,
-      select: 0, //for don't show pass when create user
+      // select: 0, //for don't show pass when create user
     },
     needsPasswordChage: {
       type: Boolean,
@@ -89,11 +89,12 @@ UserSchema.methods.isUserExist = async function (
   return user;
 };
 
-// UserSchema.methods.isUserExist = async function (
-//   phoneNumber: string
-// ): Promise<Partial<IUser | null>> {
-//   const user = await User.findOne({ phoneNumber });
-//   return user;
-// };
+// check password matched
+UserSchema.methods.isPasswordMatched = async function (
+  givenPassword: string,
+  savedPassword: string
+): Promise<boolean> {
+  return await bcrypt.compare(givenPassword, savedPassword);
+};
 
 export const User = model<IUser, UserModel>('User', UserSchema);
