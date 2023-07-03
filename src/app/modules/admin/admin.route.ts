@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.post(
   '/create-admin',
+
   validateRequest(UserValidation.createUserZodSchema),
   UserController.createUser
 );
