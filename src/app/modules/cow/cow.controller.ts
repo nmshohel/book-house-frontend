@@ -9,6 +9,8 @@ import sendReponse from '../../../shared/sendResponse';
 import { paginationFileds } from '../../../constants/pagination';
 import pick from '../../../shared/pick';
 import { cowFilterableFields } from './cow.constrant';
+import ApiError from '../../../errors/ApiError';
+// import ApiError from '../../../errors/ApiError';
 
 const createCow = catchAsync(async (req: Request, res: Response) => {
   const { ...cowData } = req.body;
@@ -24,6 +26,7 @@ const createCow = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleCow = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
+
   const result = await CowService.getSingleCow(id);
 
   sendReponse<ICow>(res, {
@@ -37,6 +40,14 @@ const getSingleCow = catchAsync(async (req: Request, res: Response) => {
 const deleteCow = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await CowService.deleteCow(id);
+  const userId = req.user?.userId;
+  const sellerId = result?.seller._id.toString();
+  if (userId !== sellerId) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      'You are not owner of this cow'
+    );
+  }
   sendReponse<ICow>(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -64,6 +75,14 @@ const updateCow = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const updatedData = req.body;
   const result = await CowService.updateCow(id, updatedData);
+  const userId = req.user?.userId;
+  const sellerId = result?.seller._id.toString();
+  if (userId !== sellerId) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      'You are not owner of this cow'
+    );
+  }
 
   sendReponse<ICow>(res, {
     statusCode: httpStatus.OK,

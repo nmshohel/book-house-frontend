@@ -13,7 +13,10 @@ const createCow = async (payload: ICow): Promise<ICow> => {
 };
 
 // get single cow service
-const getSingleCow = async (id: string): Promise<ICow | null> => {
+const getSingleCow = async (
+  id: string,
+  userId: string
+): Promise<ICow | null> => {
   const result = await Cow.findById(id);
   return result;
 };

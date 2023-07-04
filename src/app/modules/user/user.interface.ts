@@ -6,6 +6,7 @@ export type UserName = {
 };
 
 export type IUser = {
+  _id: string;
   phoneNumber: string;
   role: 'seller' | 'buyer' | 'admin';
   password: string;
@@ -14,6 +15,7 @@ export type IUser = {
   address: string;
   budjet?: number;
   income?: number;
+  userId?: string | null;
 };
 export type IUserFilters = {
   searchTerm?: string;

@@ -25,6 +25,11 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, ['searchTerm']);
   const paginationOptions = pick(req.query, paginationFileds);
   const result = await OrderService.getAllOrders(filters, paginationOptions);
+  // console.log(result.data, '--------------');
+  // result.data.map(user => {
+  //   console.log(user.buyer._id);
+  //   console.log(user.cow.seller.toString());
+  // });
 
   sendReponse<IOrder[]>(res, {
     statusCode: httpStatus.OK,

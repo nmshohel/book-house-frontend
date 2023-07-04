@@ -51,6 +51,9 @@ export const UserSchema = new Schema<
     income: {
       type: Number,
     },
+    userId: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -84,7 +87,7 @@ UserSchema.methods.isUserExist = async function (
 ): Promise<Partial<IUser | null>> {
   const user = User.findOne(
     { phoneNumber },
-    { phoneNumber: 1, password: 1, needsPasswordChage: 1, role: 1 }
+    { phoneNumber: 1, password: 1, needsPasswordChage: 1, role: 1, _id: 1 }
   );
   return user;
 };

@@ -17,12 +17,12 @@ const loginUser = async (payload: ILoginUser): Promise<IUserLoginResponse> => {
   const user = new User();
   // check user exist
   const isUserExist = await user.isUserExist(phoneNumber);
-  console.log(isUserExist);
+  console.log('is user exist', isUserExist?._id);
 
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User Not Exist');
   }
-
+  // const userId = 10111;
   // check password matched
   if (isUserExist.password) {
     const passwordMatched = await user.isPasswordMatched(
@@ -37,16 +37,17 @@ const loginUser = async (payload: ILoginUser): Promise<IUserLoginResponse> => {
     phoneNumber: userPhoneNumber,
     role,
     needsPasswordChage,
+    _id, // Include the _id field here
   } = isUserExist;
 
   // crete token
   const accessToken = jwtHelpers.createToken(
-    { userPhoneNumber, role },
+    { userPhoneNumber, role, userId: _id }, // Use _id as userId
     config.jwt.secret as string,
     config.jwt.expires_in as string
   );
   const refreshToken = jwtHelpers.createToken(
-    { userPhoneNumber, role },
+    { userPhoneNumber, role, userId: _id }, // Use _id as userId
     config.jwt.refresh_secret as string,
     config.jwt.refresh_expires_in as string
   );

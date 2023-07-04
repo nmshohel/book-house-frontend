@@ -8,7 +8,7 @@ import auth from '../../middlewares/auth';
 
 const router = express.Router();
 const { ADMIN, SELLER, BUYER } = ENUM_USER_ROLE;
-router.get('/:id', auth(ADMIN, SELLER, BUYER), CowController.getSingleCow);
+router.get('/:id', auth(SELLER, BUYER, ADMIN), CowController.getSingleCow);
 router.delete('/:id', auth(SELLER), CowController.deleteCow);
 router.patch(
   '/:id',
@@ -23,5 +23,5 @@ router.post(
   validateRequest(CowValidation.createCowZodSchema),
   CowController.createCow
 );
-router.get('/', CowController.getAllCows);
+router.get('/', auth(SELLER, BUYER, ADMIN), CowController.getAllCows);
 export const CowRoutes = router;
